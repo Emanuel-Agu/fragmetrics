@@ -1,6 +1,9 @@
 # Outputs
 outputs/
 
+# Personal notes
+todo.md
+
 # Python
 __pycache__/
 *.pyc
