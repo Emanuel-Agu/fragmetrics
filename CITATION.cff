@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: "fragmetrics: Open-source landscape fragmentation metrics in Python"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Agu
+    given-names: Emanuel Jose
+    orcid: "https://orcid.org/0009-0003-9436-1391"
+repository-code: "https://github.com/eagu/fragmetrics"
+license: MIT
+keywords:
+  - landscape fragmentation
+  - urban metrics
+  - land use land cover
+  - geopandas
+  - IndiFrag
+  - spatial analysis
