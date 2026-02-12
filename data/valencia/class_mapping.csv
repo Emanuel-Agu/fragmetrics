@@ -1,0 +1,19 @@
+code2006,item2006,class_id,class_name
+11100,Continuous urban fabric (S.L. : > 80%),6,Residential
+11210,Discontinuous dense urban fabric (S.L. : 50% - 80%),6,Residential
+11220,Discontinuous medium density urban fabric (S.L. : 30% - 50%),6,Residential
+11230,Discontinuous low density urban fabric (S.L. : 10% - 30%),6,Residential
+11240,Discontinuous very low density urban fabric (S.L. : < 10%),6,Residential
+11300,Isolated structures,2,Barrenland
+12100,"Industrial, commercial, public, military and private units",3,Commercial
+12210,Fast transit roads and associated land,7,Roads
+12220,Other roads and associated land,7,Roads
+12230,Railways and associated land,7,Roads
+12300,Port areas,3,Commercial
+13100,Mineral extraction and dump sites,2,Barrenland
+13300,Construction sites,3,Commercial
+13400,Land without current use,2,Barrenland
+14100,Green urban areas,4,Green Urban Areas
+14200,Sports and leisure facilities,5,Leisure Facilities
+20000,"Agricultural, semi-natural areas, wetlands",1,Agricultural
+50000,Water,8,Water

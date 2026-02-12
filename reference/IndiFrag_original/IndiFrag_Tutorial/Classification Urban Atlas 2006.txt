@@ -1,0 +1,54 @@
+Urban Atlas 2006 vector layer (code2006 and item2006) and the classification in CLASS that resembles the IndiFrag tutorial:
+
+    code2006   item2006                                                      	CLASS
+       11100   Continuous urban fabric (S.L. : > 80%)                        	6
+       11210   Discontinuous dense urban fabric (S.L. : 50% -  80%)          	6
+       11220   Discontinuous medium density urban fabric (S.L. : 30% - 50%)  	6
+       11230   Discontinuous low density urban fabric (S.L. : 10% - 30%)     	6
+       11240   Discontinuous very low density urban fabric (S.L. : < 10%)    	6
+       11300   Isolated structures                                           	2
+       12100   Industrial, commercial, public, military and private units    	3
+       12210   Fast transit roads and associated land                        	7
+       12220   Other roads and associated land                               	7
+       12230   Railways and associated land                                  	7
+       12300   Port areas                                                    	3
+       13100   Mineral extraction and dump sites                             	2
+       13300   Construction sites                                            	3
+       13400   Land without current use                                      	2
+       14100   Green urban areas                                             	4
+       14200   Sports and leisure facilities                                 	5
+       20000   Agricultural, semi-natural areas, wetlands                    	1
+       50000   Water                                                         	8
+
+CLASS
+1 Agricultural
+2 Barrenland
+3 Commercial
+4 Green Urban Areas
+5 Leisure Facilities
+6 Residential
+7 Roads
+8 Water
+
+QGIS Code to construct CLASS from code2006:
+CASE
+    WHEN "CODE2006" = 11100 THEN '6'
+    WHEN "CODE2006" = 11210 THEN '6'
+    WHEN "CODE2006" = 11220 THEN '6'
+	WHEN "CODE2006" = 11230 THEN '6'
+	WHEN "CODE2006" = 11240 THEN '6'
+	WHEN "CODE2006" = 11300 THEN '2'
+	WHEN "CODE2006" = 12100 THEN '3'
+	WHEN "CODE2006" = 12210 THEN '7'
+	WHEN "CODE2006" = 12220 THEN '7'
+	WHEN "CODE2006" = 12230 THEN '7'
+	WHEN "CODE2006" = 12300 THEN '3'
+	WHEN "CODE2006" = 13100 THEN '2'
+	WHEN "CODE2006" = 13300 THEN '3'
+	WHEN "CODE2006" = 13400 THEN '2'
+	WHEN "CODE2006" = 14100 THEN '4'
+	WHEN "CODE2006" = 14200 THEN '5'
+	WHEN "CODE2006" = 20000 THEN '1'
+	WHEN "CODE2006" = 50000 THEN '8'
+    ELSE NULL
+END

@@ -1,0 +1,31 @@
+# Outputs
+outputs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Original IndiFrag materials (duplicates of data/ and large files)
+reference/IndiFrag_original/IndiFrag_Tutorial/Shapefiles/
+reference/IndiFrag_original/IndiFragv3.1_Pro.zip

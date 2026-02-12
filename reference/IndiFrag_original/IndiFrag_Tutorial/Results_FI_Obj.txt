@@ -1,0 +1,13 @@
+********************
+   IndiFrag v2.2
+********************
+
+IndiFrag is a processing tool used for the extraction of a set of indices and variables that describe quantitatively the level of fragmentation and spatial distribution of land uses in response to morphological, spatial and typological properties of cartographic objects.
+
+Created in: 		September 25th, 2014
+
+Last updated in: 	April 3th, 2018
+
+Developed by:		Marta Sapena Moll
+
+              		
