@@ -7,7 +7,10 @@ authors:
     given-names: Emanuel Jose
     orcid: "https://orcid.org/0009-0003-9436-1391"
 version: "0.1.0"
+date-released: "2026-04-17"
+doi: "10.5281/zenodo.19635209"
 repository-code: "https://github.com/Emanuel-Agu/fragmetrics"
+url: "https://doi.org/10.5281/zenodo.19635209"
 license: MIT
 keywords:
   - landscape fragmentation

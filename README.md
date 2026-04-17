@@ -1,5 +1,9 @@
 # fragmetrics
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19635209.svg)](https://doi.org/10.5281/zenodo.19635209)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python ≥3.10](https://img.shields.io/badge/python-%E2%89%A53.10-blue.svg)](pyproject.toml)
+
 Open-source landscape fragmentation metrics in Python. A `geopandas`-based reimplementation of the [IndiFrag v2.1](https://doi.org/10.4995/raet.2015.3476) toolbox (Sapena & Ruiz, Universitat Politècnica de València) — no ArcGIS/`arcpy` dependency.
 
 Metrics are computed at three levels — **Object** (polygon), **Class** (land-use class within a super-object), **Super-Object** (district / administrative unit) — across five groups plus multi-temporal change.
