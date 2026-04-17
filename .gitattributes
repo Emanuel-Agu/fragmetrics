@@ -1,0 +1,4 @@
+# Exclude Jupyter notebooks from GitHub Linguist's primary-language inference
+# so the repo reports as "Python" (the actual library) rather than
+# "Jupyter Notebook" (the tutorial).
+*.ipynb linguist-generated=true
