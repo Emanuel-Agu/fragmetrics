@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fragmetrics"
+version = "0.1.0"
+description = "Open-source landscape fragmentation metrics in Python — a geopandas reimplementation of the IndiFrag toolbox."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Emanuel Jose Agu" }
+]
+keywords = [
+    "landscape fragmentation",
+    "urban metrics",
+    "land use land cover",
+    "geopandas",
+    "IndiFrag",
+    "spatial analysis",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+dependencies = [
+    "geopandas>=0.14",
+    "shapely>=2.0",
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "scipy>=1.11",
+    "matplotlib>=3.7",
+    "pyproj>=3.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7",
+    "jupyter",
+]
+
+[project.urls]
+Homepage = "https://github.com/Emanuel-Agu/fragmetrics"
+Repository = "https://github.com/Emanuel-Agu/fragmetrics"
+Issues = "https://github.com/Emanuel-Agu/fragmetrics/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]

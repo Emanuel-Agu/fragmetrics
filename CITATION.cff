@@ -1,11 +1,12 @@
 cff-version: 1.2.0
 title: "fragmetrics: Open-source landscape fragmentation metrics in Python"
-message: "If you use this software, please cite it as below."
+message: "If you use this software, please cite it as below, along with the original IndiFrag toolbox paper (see references)."
 type: software
 authors:
   - family-names: Agu
     given-names: Emanuel Jose
     orcid: "https://orcid.org/0009-0003-9436-1391"
+version: "0.1.0"
 repository-code: "https://github.com/Emanuel-Agu/fragmetrics"
 license: MIT
 keywords:
@@ -15,3 +16,30 @@ keywords:
   - geopandas
   - IndiFrag
   - spatial analysis
+references:
+  - type: article
+    authors:
+      - family-names: Sapena
+        given-names: Marta
+      - family-names: Ruiz
+        given-names: Luis A.
+    title: "Descripción y extracción de índices de fragmentación urbana: la herramienta IndiFrag"
+    journal: "Revista de Teledetección"
+    year: 2015
+    issue: 43
+    start: 77
+    end: 90
+    doi: "10.4995/raet.2015.3476"
+  - type: article
+    authors:
+      - family-names: Sapena
+        given-names: Marta
+      - family-names: Ruiz
+        given-names: Luis A.
+    title: "Analysis of urban development by means of multi-temporal fragmentation metrics from LULC data"
+    journal: "The International Archives of the Photogrammetry, Remote Sensing and Spatial Information Sciences"
+    year: 2015
+    volume: "XL-7/W3"
+    start: 1411
+    end: 1418
+    doi: "10.5194/isprsarchives-XL-7-W3-1411-2015"
