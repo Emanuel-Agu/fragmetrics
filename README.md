@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python ≥3.10](https://img.shields.io/badge/python-%E2%89%A53.10-blue.svg)](pyproject.toml)
 
-Open-source landscape fragmentation metrics in Python. A `geopandas`-based reimplementation of the [IndiFrag v2.1](https://doi.org/10.4995/raet.2015.3476) toolbox (Sapena & Ruiz, Universitat Politècnica de València) — no ArcGIS/`arcpy` dependency.
+Open-source landscape fragmentation metrics in Python, built on `geopandas` and `shapely`, with no ArcGIS/`arcpy` dependency. The metrics are those defined in the [IndiFrag](https://doi.org/10.4995/raet.2015.3476) toolbox by Marta Sapena and Luis A. Ruiz (Universitat Politècnica de València); see [Relationship to IndiFrag](#relationship-to-indifrag).
 
 Metrics are computed at three levels — **Object** (polygon), **Class** (land-use class within a super-object), **Super-Object** (district / administrative unit) — across five groups plus multi-temporal change.
 
@@ -36,7 +36,7 @@ Requires Python ≥ 3.10 with `geopandas`, `shapely` 2.x, `pandas`, `numpy`, `sc
 
 ```python
 import geopandas as gpd
-from indifrag.metrics import area_perimeter, shape
+from fragmetrics.metrics import area_perimeter, shape
 
 # Load a Land-Use/Land-Cover polygon layer and the administrative districts
 # (super-objects) that partition the study area. Both must share the same
@@ -71,7 +71,16 @@ See [`notebooks/01_fragmentation_with_SO.ipynb`](notebooks/01_fragmentation_with
 
 ## Reference
 
-The `reference/` folder ships the original IndiFrag documentation (tutorial, brief user guide, metrics reference) and the expected numeric outputs used for validation. Metric names and level conventions in this package follow those documents exactly.
+The `reference/` folder holds materials by the IndiFrag authors: the IndiFrag documentation (tutorial, brief user guide, metrics reference), the expected numeric outputs of the IndiFrag tutorial used here for validation, and a copy of the IndiFrag v3.1 distribution. They are the work of Sapena and Ruiz, included for reference and validation, and are not covered by this package's MIT license. Metric names and level conventions in this package follow the IndiFrag documents exactly.
+
+## Relationship to IndiFrag
+
+`fragmetrics` is a separate Python package with its own design: metrics are functions organized by level (object, class, super-object) that operate on `geopandas` data frames.
+
+- **Metric definitions.** The metric names, definitions and conventions (levels; areas in km², perimeters in km) follow the IndiFrag metrics reference (Sapena & Ruiz 2015). Please cite IndiFrag alongside this package; see [Citing](#citing).
+- **Validation.** Results are checked against the published outputs of the IndiFrag tutorial (Valencia, Urban Atlas 2006), kept in `reference/expected_results/`.
+- **Code.** The IndiFrag v3.1 distribution, including its source code, was available during development. `fragmetrics` contains no code from it; a line-by-line comparison with IndiFrag's `Fragmentation.py` (November 2026) found no shared lines.
+- **Development.** The code was written by the author with the assistance of Anthropic's Claude (Claude Opus 4.6 and 4.7, through Claude Code), as recorded in the commit history; the author reviewed and validated all code.
 
 ## Citing
 
@@ -87,4 +96,4 @@ If you use multi-temporal metrics, also cite:
 
 MIT — see [`LICENSE`](LICENSE).
 
-`fragmetrics` is an independent open-source reimplementation and is not affiliated with or endorsed by the IndiFrag authors or Universitat Politècnica de València.
+`fragmetrics` is an independent package and is not affiliated with or endorsed by the IndiFrag authors or Universitat Politècnica de València.

@@ -7,6 +7,13 @@ A_T always refers to super-object area.
 Levels:
   Cl = Class     (group of objects with same land-use class within a super-object)
   SO = Super-Object (district / administrative unit)
+
+References:
+  Sapena, M., & Ruiz, L. A. (2015). Descripción y extracción de índices de
+  fragmentación urbana: la herramienta IndiFrag. Revista de Teledetección, 43,
+  77-90. https://doi.org/10.4995/raet.2015.3476
+  Metric definitions and names follow the IndiFrag metrics reference
+  (IndiFrag v2.1, Universitat Politècnica de València).
 """
 
 import numpy as np
