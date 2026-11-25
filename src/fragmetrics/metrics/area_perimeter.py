@@ -17,10 +17,9 @@ References:
   (IndiFrag v2.1, Universitat Politècnica de València).
 """
 
+import geopandas as gpd
 import numpy as np
 import pandas as pd
-import geopandas as gpd
-
 
 # ---------------------------------------------------------------------------
 # Private helpers
