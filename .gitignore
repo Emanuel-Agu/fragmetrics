@@ -25,7 +25,3 @@ venv/
 # IDE
 .vscode/
 .idea/
-
-# Original IndiFrag materials (duplicates of data/ and large files)
-reference/IndiFrag_original/IndiFrag_Tutorial/Shapefiles/
-reference/IndiFrag_original/IndiFragv3.1_Pro.zip

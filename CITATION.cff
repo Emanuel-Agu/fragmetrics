@@ -8,9 +8,13 @@ authors:
     orcid: "https://orcid.org/0009-0003-9436-1391"
 version: "0.1.0"
 date-released: "2026-04-17"
-doi: "10.5281/zenodo.19635209"
+doi: "10.5281/zenodo.19635208"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.19635208"
+    description: "Concept DOI (always resolves to the latest version)"
 repository-code: "https://github.com/Emanuel-Agu/fragmetrics"
-url: "https://doi.org/10.5281/zenodo.19635209"
+url: "https://doi.org/10.5281/zenodo.19635208"
 license: MIT
 keywords:
   - landscape fragmentation
