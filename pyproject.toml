@@ -1,16 +1,17 @@
 [build-system]
-requires = ["setuptools>=61", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
 
 [project]
 name = "fragmetrics"
 version = "0.1.0"
-description = "Open-source landscape fragmentation metrics in Python — a geopandas reimplementation of the IndiFrag toolbox."
+description = "Open-source landscape fragmentation metrics in Python — implementing the metrics defined in IndiFrag with geopandas and shapely."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
-    { name = "Emanuel Jose Agu" }
+    { name = "Emanuel Jose Agu" },
 ]
 keywords = [
     "landscape fragmentation",
@@ -23,12 +24,12 @@ keywords = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: GIS",
 ]
 dependencies = [
@@ -36,15 +37,20 @@ dependencies = [
     "shapely>=2.0",
     "pandas>=2.0",
     "numpy>=1.24",
-    "scipy>=1.11",
-    "matplotlib>=3.7",
     "pyproj>=3.6",
 ]
 
 [project.optional-dependencies]
+notebooks = [
+    "matplotlib>=3.7",
+    "jupyter>=1.0",
+]
+
+[dependency-groups]
 dev = [
-    "pytest>=7",
-    "jupyter",
+    "pytest>=8",
+    "pytest-cov>=5",
+    "ruff>=0.8",
 ]
 
 [project.urls]
@@ -52,5 +58,29 @@ Homepage = "https://github.com/Emanuel-Agu/fragmetrics"
 Repository = "https://github.com/Emanuel-Agu/fragmetrics"
 Issues = "https://github.com/Emanuel-Agu/fragmetrics/issues"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/fragmetrics"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/README.md",
+    "/LICENSE",
+    "/CITATION.cff",
+    "/pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+src = ["src", "tests"]
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]

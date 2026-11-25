@@ -1,0 +1,33 @@
+{
+  "title": "fragmetrics: Open-source landscape fragmentation metrics in Python",
+  "upload_type": "software",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Agu, Emanuel Jose",
+      "orcid": "0009-0003-9436-1391"
+    }
+  ],
+  "keywords": [
+    "landscape fragmentation",
+    "urban metrics",
+    "land use land cover",
+    "geopandas",
+    "IndiFrag",
+    "spatial analysis"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.4995/raet.2015.3476",
+      "relation": "cites",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5194/isprsarchives-XL-7-W3-1411-2015",
+      "relation": "cites",
+      "resource_type": "publication-conferencepaper",
+      "scheme": "doi"
+    }
+  ]
+}

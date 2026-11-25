@@ -14,7 +14,7 @@ Metrics are computed at three levels — **Object** (polygon), **Class** (land-u
 |---|---|---|---|
 | Area & perimeter | `metrics.area_perimeter` | Area, Perim, PerimT, DC, DU, TM, DB, dimB, LPF, IFUP | ✅ implemented |
 | Shape | `metrics.shape` | DF, DFP, IF, RMPA | ✅ implemented |
-| Aggregation | `metrics.aggregation` | Nob, DO, DEP, DEM, TEM, COHE, IS, GC, CU, C | 🚧 planned |
+| Aggregation | `metrics.aggregation` | Nob, DO, DEP, DEM, TEM, COHE, IS, GC, CU, C | ✅ implemented |
 | Diversity | `metrics.diversity` | NCl, DSHAN, USHAN, SIMP, DD, IFFR, IFFA | 🚧 planned |
 | Contrast | `metrics.contrast` | RCB (O / Cl / SO) | 🚧 planned |
 | Multi-temporal | `metrics.multitemporal` | LEI, MEI, AWMEI, LUC, CP, RC, concentric/sector | 🚧 planned |
@@ -23,55 +23,73 @@ Validation against IndiFrag's published Valencia expected outputs lives in `refe
 
 ## Install
 
+Using [`uv`](https://docs.astral.sh/uv/) (recommended):
+
 ```bash
 git clone https://github.com/Emanuel-Agu/fragmetrics.git
 cd fragmetrics
-pip install -r requirements.txt
+uv sync --dev
+```
+
+Or with `pip`:
+
+```bash
+git clone https://github.com/Emanuel-Agu/fragmetrics.git
+cd fragmetrics
 pip install -e .
 ```
 
-Requires Python ≥ 3.10 with `geopandas`, `shapely` 2.x, `pandas`, `numpy`, `scipy`, `matplotlib`, `pyproj`.
+To install optional dependencies for running the tutorial notebooks (`matplotlib`, `jupyter`):
+
+```bash
+uv sync --extra notebooks
+# or: pip install -e ".[notebooks]"
+```
+
+Requires Python ≥ 3.10 with `geopandas`, `shapely` 2.x, `pandas`, `numpy`, and `pyproj`.
 
 ## Quickstart
 
 ```python
 import geopandas as gpd
-from fragmetrics.metrics import area_perimeter, shape
+from fragmetrics.metrics import aggregation, area_perimeter, shape
 
-# Load a Land-Use/Land-Cover polygon layer and the administrative districts
-# (super-objects) that partition the study area. Both must share the same
-# projected CRS in metres.
-objects = gpd.read_file("data/valencia/ES003L2_VALENCIA_UA2006_Revised_Clipped_to_Core.shp")
+# Load the Valencia LULC polygon layer (EPSG:3035) and administrative districts
+# (EPSG:25830), reproject to a common projected CRS in metres, and intersect
+# objects with super-object boundaries.
 districts = gpd.read_file("data/valencia/VALENCIA_DISTR.shp")
+objects = gpd.read_file(
+    "data/valencia/ES003L2_VALENCIA_UA2006_Revised_Clipped_to_Core.shp"
+).to_crs(districts.crs)
+objects = gpd.overlay(objects, districts[["CUDIS", "geometry"]], how="intersection")
 
-# Object-level area/perimeter
+# Object-level area/perimeter and shape metrics
 objects = area_perimeter.object_metrics(objects)
 objects = shape.object_metrics(objects)
 
 # Class-level (one row per class × super-object)
 cl_ap = area_perimeter.class_metrics(objects, class_col="CLASS", so_col="CUDIS")
 cl_sh = shape.class_metrics(objects, class_col="CLASS", so_col="CUDIS")
+cl_ag = aggregation.class_metrics(objects, districts, class_col="CLASS", so_col="CUDIS")
 
 # Super-object level (one row per district)
-so_ap = area_perimeter.super_object_metrics(objects, districts,
-                                            class_col="CLASS", so_col="CUDIS")
+so_ap = area_perimeter.super_object_metrics(
+    objects, districts, class_col="CLASS", so_col="CUDIS"
+)
 ```
 
-See [`notebooks/01_fragmentation_with_SO.ipynb`](notebooks/01_fragmentation_with_SO.ipynb) for an end-to-end tutorial on the Valencia urban atlas data, including maps of every implemented metric.
+See [`notebooks/01_fragmentation_with_SO.ipynb`](notebooks/01_fragmentation_with_SO.ipynb) for an end-to-end tutorial on the Valencia Urban Atlas data, including maps of every implemented metric.
 
 ## Data conventions
 
-- Input geometries must be in a **projected CRS in metres**.
+- Input geometries must be in a **projected CRS in metres** (geographic CRS inputs raise a `ValueError`).
 - Output areas are reported in **km²**, perimeters in **km** (IndiFrag convention).
 - `IFUP` requires an `obstruction_map: dict[class_id → coefficient ∈ [0, 1]]` reflecting how obstructive each land-use class is.
 
-## Example data
+## Example data & validation reference
 
-`data/valencia/` contains the Valencia 2006 Urban Atlas LULC layer, district boundaries, and the city-centre reference point used in the IndiFrag tutorial — enough to reproduce every notebook end-to-end.
-
-## Reference
-
-The `reference/` folder holds materials by the IndiFrag authors: the IndiFrag documentation (tutorial, brief user guide, metrics reference), the expected numeric outputs of the IndiFrag tutorial used here for validation, and a copy of the IndiFrag v3.1 distribution. They are the work of Sapena and Ruiz, included for reference and validation, and are not covered by this package's MIT license. Metric names and level conventions in this package follow the IndiFrag documents exactly.
+- `data/valencia/` contains the Valencia 2006 Urban Atlas LULC layer, district boundaries, and the city-centre reference point used in the IndiFrag tutorial — enough to run the notebooks and integration tests end-to-end (see [`data/valencia/README.md`](data/valencia/README.md)).
+- `reference/expected_results/` holds the published numeric outputs of the IndiFrag tutorial used here for automated validation (see [`reference/README.md`](reference/README.md)). The IndiFrag software distribution and manuals are not redistributed in this repository; obtain them directly from the [CGAT–UPV Software Portal](https://cgat.webs.upv.es/software/).
 
 ## Relationship to IndiFrag
 
@@ -79,8 +97,9 @@ The `reference/` folder holds materials by the IndiFrag authors: the IndiFrag do
 
 - **Metric definitions.** The metric names, definitions and conventions (levels; areas in km², perimeters in km) follow the IndiFrag metrics reference (Sapena & Ruiz 2015). Please cite IndiFrag alongside this package; see [Citing](#citing).
 - **Validation.** Results are checked against the published outputs of the IndiFrag tutorial (Valencia, Urban Atlas 2006), kept in `reference/expected_results/`.
-- **Code.** The IndiFrag v3.1 distribution, including its source code, was available during development. `fragmetrics` contains no code from it; a line-by-line comparison with IndiFrag's `Fragmentation.py` (November 2026) found no shared lines.
-- **Development.** The code was written by the author with the assistance of Anthropic's Claude (Claude Opus 4.6 and 4.7, through Claude Code), as recorded in the commit history; the author reviewed and validated all code.
+- **Code.** `fragmetrics` is an independent Python implementation with no code copied from IndiFrag.
+- **Third-party files.** `data/valencia/` and `reference/expected_results/` are third-party data/validation materials and are not covered by this package's MIT license.
+- **AI-assisted development.** Code and documentation were developed by the author with the assistance of Anthropic's Claude (via Claude Code), as recorded in the commit history. The author reviewed, tested, and validated all code and outputs against the reference results.
 
 ## Citing
 

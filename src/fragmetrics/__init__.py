@@ -2,7 +2,7 @@
 fragmetrics - Open-source landscape fragmentation metrics in Python (metric definitions follow IndiFrag; Sapena & Ruiz 2015).
 
 A Python implementation (geopandas + shapely, no ArcGIS/arcpy) of the
-fragmentation metrics defined in the IndiFrag v2.1 toolbox by Sapena & Ruiz
+fragmentation metrics defined in the IndiFrag toolbox by Sapena & Ruiz
 (Universitat Politècnica de València). Cite IndiFrag alongside fragmetrics
 when you use these metrics (see CITATION.cff).
 
@@ -19,8 +19,17 @@ References:
   fragmentación urbana: la herramienta IndiFrag. Revista de Teledetección, 43,
   77-90. https://doi.org/10.4995/raet.2015.3476
   Metric definitions and names follow the IndiFrag metrics reference
-  (IndiFrag v2.1, Universitat Politècnica de València).
+  (Universitat Politècnica de València).
   Sapena, M., & Ruiz, L. A. (2015). Analysis of urban development by means of
   multi-temporal fragmentation metrics from LULC data. ISPRS Archives,
   XL-7/W3, 1411-1418. https://doi.org/10.5194/isprsarchives-XL-7-W3-1411-2015
 """
+
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("fragmetrics")
+except PackageNotFoundError:  # pragma: no cover - uninstalled source tree
+    __version__ = "0.0.0.dev0"
+
+__all__ = ["__version__"]
