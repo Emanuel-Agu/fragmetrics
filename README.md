@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/1156564374.svg)](https://doi.org/10.5281/zenodo.19635208)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python ≥3.10](https://img.shields.io/badge/python-%E2%89%A53.10-blue.svg)](pyproject.toml)
+[![Python ≥3.11](https://img.shields.io/badge/python-%E2%89%A53.11-blue.svg)](pyproject.toml)
 
 Open-source landscape fragmentation metrics in Python, built on `geopandas` and `shapely`, with no ArcGIS/`arcpy` dependency. The metrics are those defined in the [IndiFrag](https://doi.org/10.4995/raet.2015.3476) toolbox by Marta Sapena and Luis A. Ruiz (Universitat Politècnica de València); see [Relationship to IndiFrag](#relationship-to-indifrag).
 
@@ -23,14 +23,30 @@ Validation against IndiFrag's published Valencia expected outputs lives in `refe
 
 ## Install
 
+Using [`uv`](https://docs.astral.sh/uv/) (recommended):
+
 ```bash
 git clone https://github.com/Emanuel-Agu/fragmetrics.git
 cd fragmetrics
-pip install -r requirements.txt
+uv sync --dev
+```
+
+Or with `pip`:
+
+```bash
+git clone https://github.com/Emanuel-Agu/fragmetrics.git
+cd fragmetrics
 pip install -e .
 ```
 
-Requires Python ≥ 3.10 with `geopandas`, `shapely` 2.x, `pandas`, `numpy`, `scipy`, `matplotlib`, `pyproj`.
+To install optional dependencies for running the tutorial notebooks (`matplotlib`, `jupyter`):
+
+```bash
+uv sync --extra notebooks
+# or: pip install -e ".[notebooks]"
+```
+
+Requires Python ≥ 3.11 with `geopandas`, `shapely` 2.x, `pandas`, `numpy`, and `pyproj`.
 
 ## Quickstart
 
