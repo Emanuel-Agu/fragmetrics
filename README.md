@@ -65,13 +65,10 @@ See [`notebooks/01_fragmentation_with_SO.ipynb`](notebooks/01_fragmentation_with
 - Output areas are reported in **km²**, perimeters in **km** (IndiFrag convention).
 - `IFUP` requires an `obstruction_map: dict[class_id → coefficient ∈ [0, 1]]` reflecting how obstructive each land-use class is.
 
-## Example data
+## Example data & validation reference
 
-`data/valencia/` contains the Valencia 2006 Urban Atlas LULC layer, district boundaries, and the city-centre reference point used in the IndiFrag tutorial — enough to reproduce every notebook end-to-end.
-
-## Reference
-
-The `reference/` folder holds materials by the IndiFrag authors: the IndiFrag documentation (tutorial, brief user guide, metrics reference), the expected numeric outputs of the IndiFrag tutorial used here for validation, and a copy of the IndiFrag v3.1 distribution. They are the work of Sapena and Ruiz, included for reference and validation, and are not covered by this package's MIT license. Metric names and level conventions in this package follow the IndiFrag documents exactly.
+- `data/valencia/` contains the Valencia 2006 Urban Atlas LULC layer, district boundaries, and the city-centre reference point used in the IndiFrag tutorial — enough to run the notebooks end-to-end (see [`data/valencia/README.md`](data/valencia/README.md)).
+- `reference/expected_results/` holds the published numeric outputs of the IndiFrag tutorial used here for validation (see [`reference/README.md`](reference/README.md)). The IndiFrag software distribution and manuals are not redistributed in this repository; obtain them directly from the [CGAT–UPV Software Portal](https://cgat.webs.upv.es/software/).
 
 ## Relationship to IndiFrag
 
@@ -79,8 +76,9 @@ The `reference/` folder holds materials by the IndiFrag authors: the IndiFrag do
 
 - **Metric definitions.** The metric names, definitions and conventions (levels; areas in km², perimeters in km) follow the IndiFrag metrics reference (Sapena & Ruiz 2015). Please cite IndiFrag alongside this package; see [Citing](#citing).
 - **Validation.** Results are checked against the published outputs of the IndiFrag tutorial (Valencia, Urban Atlas 2006), kept in `reference/expected_results/`.
-- **Code.** The IndiFrag v3.1 distribution, including its source code, was available during development. `fragmetrics` contains no code from it; a line-by-line comparison with IndiFrag's `Fragmentation.py` (November 2026) found no shared lines.
-- **Development.** The code was written by the author with the assistance of Anthropic's Claude (Claude Opus 4.6 and 4.7, through Claude Code), as recorded in the commit history; the author reviewed and validated all code.
+- **Code.** `fragmetrics` is an independent Python implementation with no code copied from IndiFrag.
+- **Third-party files.** `data/valencia/` and `reference/expected_results/` are third-party data/validation materials and are not covered by this package's MIT license.
+- **AI-assisted development.** Code and documentation were developed by the author with the assistance of Anthropic's Claude (via Claude Code), as recorded in the commit history. The author reviewed, tested, and validated all code and outputs against the reference results.
 
 ## Citing
 
