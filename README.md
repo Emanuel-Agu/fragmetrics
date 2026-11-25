@@ -14,7 +14,7 @@ Metrics are computed at three levels — **Object** (polygon), **Class** (land-u
 |---|---|---|---|
 | Area & perimeter | `metrics.area_perimeter` | Area, Perim, PerimT, DC, DU, TM, DB, dimB, LPF, IFUP | ✅ implemented |
 | Shape | `metrics.shape` | DF, DFP, IF, RMPA | ✅ implemented |
-| Aggregation | `metrics.aggregation` | Nob, DO, DEP, DEM, TEM, COHE, IS, GC, CU, C | 🚧 planned |
+| Aggregation | `metrics.aggregation` | Nob, DO, DEP, DEM, TEM, COHE, IS, GC, CU, C | ✅ implemented |
 | Diversity | `metrics.diversity` | NCl, DSHAN, USHAN, SIMP, DD, IFFR, IFFA | 🚧 planned |
 | Contrast | `metrics.contrast` | RCB (O / Cl / SO) | 🚧 planned |
 | Multi-temporal | `metrics.multitemporal` | LEI, MEI, AWMEI, LUC, CP, RC, concentric/sector | 🚧 planned |
@@ -36,32 +36,37 @@ Requires Python ≥ 3.10 with `geopandas`, `shapely` 2.x, `pandas`, `numpy`, `sc
 
 ```python
 import geopandas as gpd
-from fragmetrics.metrics import area_perimeter, shape
+from fragmetrics.metrics import aggregation, area_perimeter, shape
 
-# Load a Land-Use/Land-Cover polygon layer and the administrative districts
-# (super-objects) that partition the study area. Both must share the same
-# projected CRS in metres.
-objects = gpd.read_file("data/valencia/ES003L2_VALENCIA_UA2006_Revised_Clipped_to_Core.shp")
+# Load the Valencia LULC polygon layer (EPSG:3035) and administrative districts
+# (EPSG:25830), reproject to a common projected CRS in metres, and intersect
+# objects with super-object boundaries.
 districts = gpd.read_file("data/valencia/VALENCIA_DISTR.shp")
+objects = gpd.read_file(
+    "data/valencia/ES003L2_VALENCIA_UA2006_Revised_Clipped_to_Core.shp"
+).to_crs(districts.crs)
+objects = gpd.overlay(objects, districts[["CUDIS", "geometry"]], how="intersection")
 
-# Object-level area/perimeter
+# Object-level area/perimeter and shape metrics
 objects = area_perimeter.object_metrics(objects)
 objects = shape.object_metrics(objects)
 
 # Class-level (one row per class × super-object)
 cl_ap = area_perimeter.class_metrics(objects, class_col="CLASS", so_col="CUDIS")
 cl_sh = shape.class_metrics(objects, class_col="CLASS", so_col="CUDIS")
+cl_ag = aggregation.class_metrics(objects, districts, class_col="CLASS", so_col="CUDIS")
 
 # Super-object level (one row per district)
-so_ap = area_perimeter.super_object_metrics(objects, districts,
-                                            class_col="CLASS", so_col="CUDIS")
+so_ap = area_perimeter.super_object_metrics(
+    objects, districts, class_col="CLASS", so_col="CUDIS"
+)
 ```
 
 See [`notebooks/01_fragmentation_with_SO.ipynb`](notebooks/01_fragmentation_with_SO.ipynb) for an end-to-end tutorial on the Valencia urban atlas data, including maps of every implemented metric.
 
 ## Data conventions
 
-- Input geometries must be in a **projected CRS in metres**.
+- Input geometries must be in a **projected CRS in metres** (geographic CRS inputs raise a `ValueError`).
 - Output areas are reported in **km²**, perimeters in **km** (IndiFrag convention).
 - `IFUP` requires an `obstruction_map: dict[class_id → coefficient ∈ [0, 1]]` reflecting how obstructive each land-use class is.
 

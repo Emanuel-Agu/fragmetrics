@@ -18,8 +18,9 @@ References:
 
 import numpy as np
 import pandas as pd
-import geopandas as gpd
+from shapely import STRtree
 
+from fragmetrics.metrics._validation import check_projected_crs
 
 # ---------------------------------------------------------------------------
 # Private helpers
@@ -27,6 +28,8 @@ import geopandas as gpd
 
 def _nearest_neighbor_distances(group_gdf):
     """Min boundary-to-boundary distance from each object to its nearest neighbour.
+
+    Uses Shapely's STRtree spatial index for O(n log n) performance.
 
     Parameters
     ----------
@@ -42,12 +45,13 @@ def _nearest_neighbor_distances(group_gdf):
     if n <= 1:
         return np.full(n, np.nan)
 
-    geoms = group_gdf.geometry.values
-    min_dists = np.empty(n)
-    for i in range(n):
-        dists = np.array([geoms[i].distance(geoms[j])
-                          for j in range(n) if j != i])
-        min_dists[i] = dists.min()
+    geoms = group_gdf.geometry.to_numpy()
+    tree = STRtree(geoms)
+    idx, dists = tree.query_nearest(
+        geoms, exclusive=True, all_matches=False, return_distance=True
+    )
+    min_dists = np.full(n, np.nan, dtype=float)
+    min_dists[idx[0]] = dists
     return min_dists
 
 
@@ -76,6 +80,9 @@ def class_metrics(objects_gdf, districts_gdf,
     -------
     DataFrame with columns: CLASS, SO, Nob, DO, DEP, DEM, TEM, COHE, IS, GC, C
     """
+    check_projected_crs(objects_gdf, "objects_gdf")
+    check_projected_crs(districts_gdf, "districts_gdf")
+
     # SO areas from district polygons (m²)
     so_area_m2 = districts_gdf.set_index(so_col).geometry.area.rename("AreaSO_m2")
 
@@ -130,7 +137,7 @@ def class_metrics(objects_gdf, districts_gdf,
         if sum_p > 0 and A_T > 0:
             sum_p_sqrtA = (p_i * np.sqrt(a_i)).sum()
             denom = 1.0 - 1.0 / np.sqrt(A_T)
-            if denom != 0:
+            if denom != 0 and sum_p_sqrtA > 0:
                 cohe = (1.0 - sum_p / sum_p_sqrtA) / denom
             else:
                 cohe = np.nan
@@ -165,8 +172,8 @@ def class_metrics(objects_gdf, districts_gdf,
         })
 
     result = pd.DataFrame(rows)
-    # Ensure consistent types
-    result["Nob"] = result["Nob"].astype(int)
+    if not result.empty:
+        result["Nob"] = result["Nob"].astype(int)
     return result
 
 
@@ -198,6 +205,9 @@ def super_object_metrics(objects_gdf, districts_gdf,
     -------
     DataFrame with columns: CUDIS, Nob, DO, DEP, TEM, COHE, IS, GC[, CU]
     """
+    check_projected_crs(objects_gdf, "objects_gdf")
+    check_projected_crs(districts_gdf, "districts_gdf")
+
     # SO areas from district polygons (m²)
     so_area_m2 = districts_gdf.set_index(so_col).geometry.area.rename("AreaSO_m2")
 
@@ -244,7 +254,7 @@ def super_object_metrics(objects_gdf, districts_gdf,
         if sum_p > 0 and A_T > 0:
             sum_p_sqrtA = (p_i * np.sqrt(a_i)).sum()
             denom = 1.0 - 1.0 / np.sqrt(A_T)
-            if denom != 0:
+            if denom != 0 and sum_p_sqrtA > 0:
                 cohe = (1.0 - sum_p / sum_p_sqrtA) / denom
             else:
                 cohe = np.nan
@@ -279,5 +289,6 @@ def super_object_metrics(objects_gdf, districts_gdf,
         rows.append(row)
 
     result = pd.DataFrame(rows)
-    result["Nob"] = result["Nob"].astype(int)
+    if not result.empty:
+        result["Nob"] = result["Nob"].astype(int)
     return result
