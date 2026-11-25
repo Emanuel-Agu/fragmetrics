@@ -19,6 +19,7 @@ References:
 import numpy as np
 import pandas as pd
 
+from fragmetrics.metrics._validation import check_projected_crs
 
 # ---------------------------------------------------------------------------
 # Object level (O)
@@ -39,6 +40,7 @@ def object_metrics(objects_gdf):
         IF = shape index = 0.25 · P / √A
         (P in metres, A in m²)
     """
+    check_projected_crs(objects_gdf, "objects_gdf")
     gdf = objects_gdf.copy()
     area_m2 = gdf.geometry.area
     perim_m = gdf.geometry.length
@@ -81,6 +83,8 @@ def class_metrics(objects_gdf, class_col="CLASS", so_col="CUDIS"):
     -------
     DataFrame with columns: CLASS, SO, DF, DFP, IF, RMPA
     """
+    check_projected_crs(objects_gdf, "objects_gdf")
+
     # Pre-compute per-object values in metres for aggregation
     area_m2 = objects_gdf.geometry.area
     perim_m = objects_gdf.geometry.length
@@ -98,7 +102,7 @@ def class_metrics(objects_gdf, class_col="CLASS", so_col="CUDIS"):
         AreaCl_m2=("_area_m2", "sum"),
         PerimCl_m=("_perim_m", "sum"),
     ).reset_index()
-    agg.rename(columns={so_col: "SO", class_col: "CLASS"}, inplace=True)
+    agg = agg.rename(columns={so_col: "SO", class_col: "CLASS"})
 
     # DF at class level — from aggregate area/perimeter
     with np.errstate(divide="ignore", invalid="ignore"):
@@ -119,7 +123,7 @@ def class_metrics(objects_gdf, class_col="CLASS", so_col="CUDIS"):
         return (g["_DF_obj"] * g["_area_m2"]).sum() / g["_area_m2"].sum()
 
     dfp = grouped.apply(_dfp, include_groups=False).rename("DFP").reset_index()
-    dfp.rename(columns={so_col: "SO", class_col: "CLASS"}, inplace=True)
+    dfp = dfp.rename(columns={so_col: "SO", class_col: "CLASS"})
     agg = agg.merge(dfp, on=["SO", "CLASS"], how="left")
 
     # IF at class level — from aggregate area/perimeter
@@ -132,7 +136,7 @@ def class_metrics(objects_gdf, class_col="CLASS", so_col="CUDIS"):
 
     # RMPA — mean of object-level P/A ratios
     rmpa = grouped["_pa_ratio"].mean().reset_index(name="RMPA")
-    rmpa.rename(columns={so_col: "SO", class_col: "CLASS"}, inplace=True)
+    rmpa = rmpa.rename(columns={so_col: "SO", class_col: "CLASS"})
     agg = agg.merge(rmpa, on=["SO", "CLASS"], how="left")
 
     return agg[["CLASS", "SO", "DF", "DFP", "IF", "RMPA"]]
@@ -162,6 +166,9 @@ def super_object_metrics(objects_gdf, districts_gdf,
     -------
     DataFrame with columns: CUDIS, DF, IF, RMPA
     """
+    check_projected_crs(objects_gdf, "objects_gdf")
+    check_projected_crs(districts_gdf, "districts_gdf")
+
     # DF and IF from district polygon geometry
     area_m2 = districts_gdf.geometry.area
     perim_m = districts_gdf.geometry.length
@@ -190,7 +197,7 @@ def super_object_metrics(objects_gdf, districts_gdf,
         "_pa_ratio": objects_gdf.geometry.length / objects_gdf.geometry.area,
     })
     rmpa = temp.groupby("SO")["_pa_ratio"].mean().reset_index()
-    rmpa.rename(columns={"SO": "CUDIS", "_pa_ratio": "RMPA"}, inplace=True)
+    rmpa = rmpa.rename(columns={"SO": "CUDIS", "_pa_ratio": "RMPA"})
     so = so.merge(rmpa, on="CUDIS", how="left")
 
     return so

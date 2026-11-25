@@ -17,10 +17,11 @@ References:
   (IndiFrag v2.1, Universitat Politècnica de València).
 """
 
+import geopandas as gpd
 import numpy as np
 import pandas as pd
-import geopandas as gpd
 
+from fragmetrics.metrics._validation import check_projected_crs
 
 # ---------------------------------------------------------------------------
 # Private helpers
@@ -48,6 +49,8 @@ def _boundary_dimension(areas_m2, perims_m):
         return np.nan
     ln_a = np.log(a[mask])
     ln_p = np.log(p[mask])
+    if np.allclose(ln_p, ln_p[0]):
+        return np.nan
     slope, _ = np.polyfit(ln_p, ln_a, 1)  # ln(A) = slope·ln(P) + intercept
     if slope <= 0:
         return np.nan
@@ -72,8 +75,9 @@ def _leapfrog(group_gdf):
         return 1.0
 
     gdf = group_gdf.reset_index(drop=True)
-    # Self-join to find touching pairs
-    joined = gpd.sjoin(gdf, gdf, how="inner", predicate="intersects")
+    # Self-join on geometry only to find touching/intersecting pairs
+    geom_only = gdf[["geometry"]]
+    joined = gpd.sjoin(geom_only, geom_only, how="inner", predicate="intersects")
     # Remove self-matches
     joined = joined[joined.index != joined["index_right"]]
     touching_idx = set(joined.index)
@@ -96,12 +100,18 @@ def _max_object_length(geom):
     float
         Length in the geometry's CRS units (metres for projected CRS).
     """
+    if geom is None or geom.is_empty:
+        return 0.0
     rect = geom.minimum_rotated_rectangle
+    if rect.is_empty or rect.geom_type == "Point":
+        return 0.0
+    if rect.geom_type == "LineString":
+        return float(rect.length)
     coords = list(rect.exterior.coords)
     # Rectangle has 5 coords (closed ring); measure two adjacent edges
     d1 = np.hypot(coords[1][0] - coords[0][0], coords[1][1] - coords[0][1])
     d2 = np.hypot(coords[2][0] - coords[1][0], coords[2][1] - coords[1][1])
-    return max(d1, d2)
+    return float(max(d1, d2))
 
 
 # ---------------------------------------------------------------------------
@@ -120,6 +130,7 @@ def object_metrics(objects_gdf):
     -------
     GeoDataFrame with added columns: AreaO, PerimO
     """
+    check_projected_crs(objects_gdf, "objects_gdf")
     gdf = objects_gdf.copy()
     gdf["AreaO"] = gdf.geometry.area / 1e6     # m² → km²
     gdf["PerimO"] = gdf.geometry.length / 1e3  # m  → km
@@ -147,6 +158,7 @@ def class_metrics(objects_gdf, class_col="CLASS", so_col="CUDIS"):
     -------
     DataFrame with columns: CLASS, SO, AreaCl, PerimCl, NobCl, DC, TM, DB, dimB, LPF
     """
+    check_projected_crs(objects_gdf, "objects_gdf")
     grouped = objects_gdf.groupby([so_col, class_col])
 
     cl = pd.DataFrame({
@@ -155,7 +167,7 @@ def class_metrics(objects_gdf, class_col="CLASS", so_col="CUDIS"):
         "NobCl": grouped["AreaO"].count(),           # count
     }).reset_index()
 
-    cl.rename(columns={so_col: "SO", class_col: "CLASS"}, inplace=True)
+    cl = cl.rename(columns={so_col: "SO", class_col: "CLASS"})
 
     # Super-object total areas for density calculation
     so_areas = objects_gdf.groupby(so_col)["AreaO"].sum()
@@ -184,8 +196,7 @@ def class_metrics(objects_gdf, class_col="CLASS", so_col="CUDIS"):
     # LPF — gross leapfrog per class-SO group
     cl["LPF"] = cl.apply(lambda r: lpf_vals.get((r["SO"], r["CLASS"]), np.nan), axis=1)
 
-    cl.drop(columns="AreaSO", inplace=True)
-    return cl
+    return cl.drop(columns="AreaSO")
 
 
 # ---------------------------------------------------------------------------
@@ -215,6 +226,9 @@ def super_object_metrics(objects_gdf, districts_gdf,
     -------
     DataFrame with columns: CUDIS, AreaSO, PerimSO, PerimT, NCl, NobSO[, DU]
     """
+    check_projected_crs(objects_gdf, "objects_gdf")
+    check_projected_crs(districts_gdf, "districts_gdf")
+
     # SO area and perimeter from the district polygons themselves
     so = pd.DataFrame({
         "CUDIS": districts_gdf[so_col],
@@ -235,7 +249,7 @@ def super_object_metrics(objects_gdf, districts_gdf,
     # In a planar tessellation each internal edge is shared by two objects,
     # so: PerimT = (sum_object_perimeters + PerimSO) / 2
     so["PerimT"] = (so["obj_perim_sum"] + so["PerimSO"]) / 2
-    so.drop(columns="obj_perim_sum", inplace=True)
+    so = so.drop(columns="obj_perim_sum")
 
     # DU — urban density
     if urban_classes is not None:
@@ -252,7 +266,7 @@ def super_object_metrics(objects_gdf, districts_gdf,
         )
         so["A_urban"] = so["A_urban"].fillna(0.0)
         so["DU"] = so["A_urban"] / so["AreaSO"]
-        so.drop(columns="A_urban", inplace=True)
+        so = so.drop(columns="A_urban")
 
     return so
 
@@ -284,6 +298,9 @@ def ifup(objects_gdf, districts_gdf, obstruction_map,
         IFU is per super-object. IFUP is the area-weighted mean (same value
         on every row).
     """
+    check_projected_crs(objects_gdf, "objects_gdf")
+    check_projected_crs(districts_gdf, "districts_gdf")
+
     gdf = objects_gdf.copy()
 
     # L_max — longest axis of minimum rotated rectangle (metres)
